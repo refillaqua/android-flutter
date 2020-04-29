@@ -54,10 +54,11 @@ RUN echo '. $HOME/.asdf/completions/asdf.bash' >> .bashrc
 ENV PATH "$PATH:/home/developer/.asdf/bin:/home/developer/.asdf/shims"
 
 # Install Ruby
+RUN echo "ruby $RUBY_VERSION" >> "$HOME/.tool-versions"
 RUN echo 'bundler' >> "$HOME/.default_gems"
 RUN asdf plugin-add ruby
-RUN asdf install ruby "$RUBY_VERSION"
-RUN asdf reshim ruby
+RUN asdf install
+RUN asdf reshim
 
 # Install Fastlane
 RUN gem install fastlane -NV
