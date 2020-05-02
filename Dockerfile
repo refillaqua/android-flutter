@@ -4,6 +4,7 @@ FROM debian:bullseye-slim
 # Variables
 
 ENV RUBY_VERSION "2.6.3"
+ENV FASTLANE_VERSION "2.146.1"
 ENV FLUTTER_CHANNEL "master"
 ENV ANDROID_SDK_TOOLS_VERSION "6200805"
 ENV ANDROID_BUNDLE_TOOL_VERSION "0.13.4"
@@ -19,7 +20,15 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y \
       curl git unzip xz-utils zip libglu1-mesa default-jdk wget \
       autoconf bison build-essential libssl-dev libyaml-dev libreadline-dev \
-      zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev sudo
+      zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev sudo \
+      locales locale-all
+
+# Set the locale
+RUN locale-gen en_US.UTF-8
+RUN update-locale en_US
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Set up new user
 RUN useradd -ms /bin/bash developer
@@ -46,10 +55,6 @@ RUN yes | sdkmanager --licenses
 RUN sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" "patcher;v4" "platform-tools" "platforms;android-${ANDROID_BUILD_PLATFORM}" "sources;android-${ANDROID_BUILD_PLATFORM}"
 ENV PATH "$PATH:${ANDROID_HOME}/platform-tools"
 
-# Hack to make flutter work
-RUN mkdir -p "${ANDROID_HOME}/tools/bin"
-RUN ln -s "${ANDROID_HOME}/cmdline-tools/tools/bin/sdkmanager" "${ANDROID_HOME}/tools/bin/sdkmanager"
-
 # Install bundle tool
 RUN wget -O bundletool.jar "https://github.com/google/bundletool/releases/download/${ANDROID_BUNDLE_TOOL_VERSION}/bundletool-all.jar"
 RUN echo 'alias bundletool="java -jar $HOME/bundletool.jar"' >> .bashrc
@@ -71,7 +76,7 @@ RUN asdf install
 RUN asdf reshim
 
 # Install Fastlane
-RUN gem install fastlane -NV
+RUN gem install fastlane -NV -v "$FASTLANE_VERSION"
 
 ###############################################################################
 # Install flutter
