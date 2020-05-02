@@ -21,7 +21,7 @@ RUN apt-get install -y \
       curl git unzip xz-utils zip libglu1-mesa default-jdk wget \
       autoconf bison build-essential libssl-dev libyaml-dev libreadline-dev \
       zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev sudo \
-      locales locale-all
+      locales locales-all
 
 # Set the locale
 RUN locale-gen en_US.UTF-8
