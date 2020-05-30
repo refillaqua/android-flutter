@@ -3,12 +3,12 @@ FROM debian:bullseye-slim
 ###############################################################################
 # Variables
 
-ENV RUBY_VERSION "2.6.3"
-ENV FASTLANE_VERSION "2.146.1"
+ENV RUBY_VERSION "2.6.6"
+ENV FASTLANE_VERSION "2.148.1"
 ENV FLUTTER_CHANNEL "master"
-ENV ANDROID_SDK_TOOLS_VERSION "6200805"
-ENV ANDROID_BUNDLE_TOOL_VERSION "0.13.4"
-ENV ANDROID_BUILD_TOOLS_VERSION "29.0.2"
+ENV ANDROID_SDK_TOOLS_VERSION "6514223"
+ENV ANDROID_BUNDLE_TOOL_VERSION "0.15.0"
+ENV ANDROID_BUILD_TOOLS_VERSION "29.0.3"
 ENV ANDROID_BUILD_PLATFORM "29"
 
 ###############################################################################
@@ -41,23 +41,29 @@ WORKDIR /home/developer
 # Install Android SDK
 
 # Prepare Android directories and system variables
-RUN mkdir -p Android/sdk/cmdline-tools
 ENV ANDROID_SDK_ROOT /home/developer/Android/sdk
 ENV ANDROID_HOME /home/developer/Android/sdk
+
 RUN mkdir -p .android && touch .android/repositories.cfg
+RUN mkdir -p "${ANDROID_HOME}/cmdline-tools"
 
 # Set up Android SDK
 RUN wget -O sdk-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip"
-RUN unzip sdk-tools.zip && rm sdk-tools.zip
-RUN mv tools "${ANDROID_HOME}/cmdline-tools/tools"
+RUN unzip sdk-tools.zip  && rm sdk-tools.zip
+RUN mv "$(pwd)/tools" "${ANDROID_HOME}/cmdline-tools"
 ENV PATH "$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin"
+
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" "patcher;v4" "platform-tools" "platforms;android-${ANDROID_BUILD_PLATFORM}" "sources;android-${ANDROID_BUILD_PLATFORM}"
 ENV PATH "$PATH:${ANDROID_HOME}/platform-tools"
 
 # Install bundle tool
-RUN wget -O bundletool.jar "https://github.com/google/bundletool/releases/download/${ANDROID_BUNDLE_TOOL_VERSION}/bundletool-all.jar"
+RUN wget -O bundletool.jar "https://github.com/google/bundletool/releases/download/${ANDROID_BUNDLE_TOOL_VERSION}/bundletool-all-${ANDROID_BUNDLE_TOOL_VERSION}.jar"
 RUN echo 'alias bundletool="java -jar $HOME/bundletool.jar"' >> .bashrc
+
+# Hack to make flutter work
+RUN rm "${ANDROID_HOME}/tools/bin/sdkmanager"
+RUN ln -s "${ANDROID_HOME}/cmdline-tools/tools/bin/sdkmanager" "${ANDROID_HOME}/tools/bin/sdkmanager"
 
 ###############################################################################
 # Install Fastlane
