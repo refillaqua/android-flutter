@@ -1,6 +1,6 @@
 # Android Flutter
 
-Builds for containers with:
+Flutter builds for containers with:
 
 - Android SDK.
 - Flutter.

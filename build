@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+source .envrc
+
+docker build \
+  -t "${TAG_LATEST}" \
+  -t "${TAG_VERSION}" \
+  --build-arg "RUBY_VERSION=${RUBY_VERSION}" \
+  --build-arg "FASTLANE_VERSION=${FASTLANE_VERSION}" \
+  --build-arg "FLUTTER_VERSION=${FLUTTER_VERSION}" \
+  --build-arg "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" \
+  --build-arg "ANDROID_BUNDLE_TOOL_VERSION=${ANDROID_BUNDLE_TOOL_VERSION}" \
+  --build-arg "ANDROID_BUILD_TOOLS_VERSION=${ANDROID_BUILD_TOOLS_VERSION}" \
+  --build-arg "ANDROID_BUILD_PLATFORM=${ANDROID_BUILD_PLATFORM}" \
+  .
+
+if [ -n "$1" ]
+then
+  docker save -o "$1" "${REPO}"
+fi
+
+exit 0
