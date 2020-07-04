@@ -6,39 +6,23 @@ executors:
       - image: circleci/buildpack-deps:bullseye
 
 jobs:
-  build:
+  build-and-publish:
     executor: docker-publisher
     steps:
       - checkout
       - setup_remote_docker
       - run:
           name: Build image
-          command: ./build image.tar
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image.tar
-  publish-master:
-    executor: docker-publisher
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - setup_remote_docker
+          command: ./build
       - run:
           name: Publish images
-          command: ./publish /tmp/workspace/image.tar
+          command: ./publish
 
 workflows:
   version: 2
   build-master:
     jobs:
-      - build:
-          filters:
-            branches:
-              only: master
-      - publish-master:
-          requires:
-            - build
+      - build-and-publish:
           filters:
             branches:
               only: master

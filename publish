@@ -2,15 +2,9 @@
 
 source .envrc
 
-if [ -z "$1" ]
-then
-  echo "Cannot load built image ${REPO}"
-  exit 1
-fi
-
-docker load -i "$1"
-
-echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
 docker push "${TAG_LATEST}"
 docker push "${TAG_VERSION}"
+
+exit 0
