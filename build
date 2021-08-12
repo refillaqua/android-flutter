@@ -13,5 +13,3 @@ docker build \
   --build-arg "ANDROID_BUILD_TOOLS_VERSION=${ANDROID_BUILD_TOOLS_VERSION}" \
   --build-arg "ANDROID_BUILD_PLATFORM=${ANDROID_BUILD_PLATFORM}" \
   .
-
-exit 0

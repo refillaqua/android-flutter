@@ -57,9 +57,9 @@ RUN mkdir -p "${ANDROID_HOME}/cmdline-tools"
 
 # Set up Android SDK
 RUN wget -O sdk-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip"
-RUN unzip sdk-tools.zip  && rm sdk-tools.zip
-RUN mv "$(pwd)/tools" "${ANDROID_HOME}/cmdline-tools"
-ENV PATH "$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin"
+RUN unzip sdk-tools.zip && rm sdk-tools.zip
+RUN mv "$(pwd)/cmdline-tools" "${ANDROID_HOME}/cmdline-tools/latest"
+ENV PATH "$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin"
 
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" "patcher;v4" "platform-tools" "platforms;android-${ANDROID_BUILD_PLATFORM}" "sources;android-${ANDROID_BUILD_PLATFORM}"
@@ -71,7 +71,7 @@ RUN echo 'alias bundletool="java -jar $HOME/bundletool.jar"' >> .bashrc
 
 # Hack to make flutter work
 RUN rm "${ANDROID_HOME}/tools/bin/sdkmanager"
-RUN ln -s "${ANDROID_HOME}/cmdline-tools/tools/bin/sdkmanager" "${ANDROID_HOME}/tools/bin/sdkmanager"
+RUN ln -s "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "${ANDROID_HOME}/tools/bin/sdkmanager"
 
 ###############################################################################
 # Install Fastlane
@@ -86,7 +86,7 @@ ENV PATH "$PATH:/home/developer/.asdf/bin:/home/developer/.asdf/shims"
 RUN echo "ruby ${RUBY_VERSION}" >> "$HOME/.tool-versions"
 RUN echo 'bundler' >> "$HOME/.default_gems"
 RUN asdf plugin-add ruby
-RUN asdf install
+RUN asdf install ruby "${RUBY_VERSION}"
 RUN asdf reshim
 
 # Install Fastlane
@@ -96,8 +96,8 @@ RUN gem install fastlane -NV -v "${FASTLANE_VERSION}"
 # Install flutter
 
 # Download Flutter SDK
-RUN wget "https://storage.googleapis.com/flutter_infra/releases/beta/linux/flutter_linux_${FLUTTER_VERSION}-beta.tar.xz"
-RUN tar xf "./flutter_linux_${FLUTTER_VERSION}-beta.tar.xz"
+RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+RUN tar xf "./flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
 ENV PATH "$PATH:/home/developer/flutter/bin"
 
 # Run basic check to download Dark SDK
